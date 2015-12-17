@@ -1,11 +1,15 @@
 {
-    "name": "leemason/tenantable",
-    "description": "Laravel tenacy.",
+    "name": "thinksaydo/envtenant",
+    "description": "Laravel Multi-Tenant Aware Artisan.",
     "license": "MIT",
     "authors": [
         {
             "name": "leemason",
             "email": "contact@nohalfpixels.com"
+        },
+        {
+            "name": "Collin Schneider",
+            "email": "collin@thinksaydo.com"
         }
     ],
     "require": {
@@ -16,7 +20,7 @@
     },
     "autoload": {
         "psr-4": {
-            "LeeMason\\Tenantable\\": "src"
+            "ThinkSayDo\\EnvTenant\\": "src"
         }
     }
 }

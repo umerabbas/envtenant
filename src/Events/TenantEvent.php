@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: leemason
- * Date: 31/10/15
- * Time: 22:10
- */
-
-namespace LeeMason\Tenantable\Events;
+namespace ThinkSayDo\EnvTenant\Events;
 
 use Illuminate\Queue\SerializesModels;
-use LeeMason\Tenantable\Tenant;
+use ThinkSayDo\EnvTenant\Tenant;
 
-abstract class TenantableEvent
+abstract class TenantEvent
 {
     use SerializesModels;
 
