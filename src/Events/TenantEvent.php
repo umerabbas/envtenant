@@ -4,7 +4,7 @@ namespace ThinkSayDo\EnvTenant\Events;
 use Illuminate\Queue\SerializesModels;
 use ThinkSayDo\EnvTenant\Tenant;
 
-abstract class TenantEvent
+class TenantEvent
 {
     use SerializesModels;
 

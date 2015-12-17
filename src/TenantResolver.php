@@ -35,7 +35,7 @@ class TenantResolver
         $this->activeTenant = $activeTenant;
         $this->setDefaultConnection($activeTenant);
 
-        event(new TenantActivatedEvent($this->activeTenant));
+        event(new TenantActivatedEvent($activeTenant));
     }
 
     public function getActiveTenant()
@@ -78,7 +78,7 @@ class TenantResolver
         $this->app['db']->setDefaultConnection($this->getActiveTenant()->connection);
     }
 
-    private function resolveRequest()
+    protected function resolveRequest()
     {
         if ($this->app->runningInConsole())
         {
@@ -94,13 +94,13 @@ class TenantResolver
         else
         {
             $this->request = $this->app->make(Request::class);
-            $aliasDomain = $this->request->getHost();
-            $subdomain = explode('.', $aliasDomain)[0];
+            $domain = $this->request->getHost();
+            $subdomain = explode('.', $domain)[0];
 
             $model = new Tenant();
             $tenant = $model
                 ->where('subdomain', '=', $subdomain)
-                ->orWhere('alias_domain', '=', $aliasDomain)
+                ->orWhere('alias_domain', '=', $domain)
                 ->first();
         }
 
@@ -113,7 +113,9 @@ class TenantResolver
             return;
         }
 
-        event(new TenantNotResolvedEvent($this));
+        event(new TenantNotResolvedEvent($domain));
+
+        throw new TenantNotResolvedException($domain);
 
         return;
     }
@@ -215,4 +217,9 @@ class TenantResolver
             }
         });
     }
+}
+
+class TenantNotResolvedException extends \Exception
+{
+
 }

@@ -1,14 +1,12 @@
 <?php
 namespace ThinkSayDo\EnvTenant\Events;
 
-use ThinkSayDo\EnvTenant\TenantResolver;
-
 class TenantNotResolvedEvent extends TenantEvent
 {
-    public $resolver;
+    public $tenant = null;
 
-    public function __construct(TenantResolver $resolver)
+    function __construct($tenant)
     {
-        $this->resolver = $resolver;
+        $this->tenant = $tenant;
     }
 }
