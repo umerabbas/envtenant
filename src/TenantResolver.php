@@ -43,16 +43,21 @@ class TenantResolver
         return $this->activeTenant;
     }
 
-    public function setDefaultConnection(Tenant $activeTenant)
+    public function setDefaultConnection($activeTenant)
     {
-        $connection = $activeTenant->connection ?: $this->defaultConnection;
-        $prefix = ($activeTenant->connection && $activeTenant->subdomain) ? $activeTenant->subdomain . '_' : '';
+        $hasConnection = ! empty($activeTenant->connection);
+        $connection = $hasConnection ? $activeTenant->connection : $this->defaultConnection;
+        $prefix = ($hasConnection && ! empty($activeTenant->subdomain)) ? $activeTenant->subdomain . '_' : '';
 
-        config()->set('tenant', $activeTenant->toArray());
         config()->set('database.default', $connection);
         config()->set('database.connections.' . $connection . '.prefix', $prefix);
 
-        $this->app['db']->purge($this->defaultConnection);
+        if ($hasConnection)
+        {
+            config()->set('tenant', $activeTenant->toArray());
+            $this->app['db']->purge($this->defaultConnection);
+        }
+
         $this->app['db']->setDefaultConnection($connection);
     }
 
@@ -71,12 +76,12 @@ class TenantResolver
 
     public function reconnectDefaultConnection()
     {
-        $this->app['db']->setDefaultConnection($this->defaultConnection);
+        $this->setDefaultConnection($this->defaultConnection);
     }
 
     public function reconnectTenantConnection()
     {
-        $this->app['db']->setDefaultConnection($this->getActiveTenant()->connection);
+        $this->setDefaultConnection($this->getActiveTenant());
     }
 
     protected function resolveRequest()
