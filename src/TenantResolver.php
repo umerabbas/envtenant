@@ -13,8 +13,9 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Illuminate\Console\Application as Artisan;
 use ThinkSayDo\EnvTenant\Events\SetActiveTenantEvent;
 use ThinkSayDo\EnvTenant\Events\TenantActivated;
-use ThinkSayDo\EnvTenant\Events\TenantNotResolvedEvent;
 use ThinkSayDo\EnvTenant\Events\TenantResolvedEvent;
+use ThinkSayDo\EnvTenant\Events\TenantNotResolvedEvent;
+use ThinkSayDo\EnvTenant\Events\TenantNotResolvedException;
 
 class TenantResolver
 {
@@ -217,9 +218,4 @@ class TenantResolver
             }
         });
     }
-}
-
-class TenantNotResolvedException extends \Exception
-{
-
 }
