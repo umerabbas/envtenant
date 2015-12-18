@@ -1,6 +1,7 @@
 <?php
 namespace ThinkSayDo\EnvTenant;
 
+use Illuminate\Console\Events\ArtisanStarting;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Symfony\Component\Console\ConsoleEvents;
@@ -141,8 +142,9 @@ class TenantResolver
 
     protected function registerTenantConsoleArgument()
     {
-        $this->app['events']->listen('artisan.start', function(Artisan $app)
+        $this->app['events']->listen('Illuminate\Console\Events\ArtisanStarting', function(ArtisanStarting $app)
         {
+            $app = $app->artisan;
             $definition = $app->getDefinition();
 
             $definition->addOption(
