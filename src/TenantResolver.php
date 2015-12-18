@@ -69,7 +69,7 @@ class TenantResolver
         return ! is_null($this->getActiveTenant());
     }
 
-    public function purgeTenantConnection()
+    public function reconnectDefaultConnection()
     {
         $this->app['db']->setDefaultConnection($this->defaultConnection);
     }
@@ -124,7 +124,7 @@ class TenantResolver
         return;
     }
 
-    private function getConsoleDispatcher()
+    protected function getConsoleDispatcher()
     {
         if (!$this->consoleDispatcher)
         {
@@ -134,7 +134,7 @@ class TenantResolver
         return $this->consoleDispatcher;
     }
 
-    private function registerTenantConsoleArgument()
+    protected function registerTenantConsoleArgument()
     {
         $this->app['events']->listen('artisan.start', function(Artisan $app)
         {
@@ -149,7 +149,7 @@ class TenantResolver
         });
     }
 
-    private function registerConsoleStartEvent()
+    protected function registerConsoleStartEvent()
     {
         $this->getConsoleDispatcher()->addListener(ConsoleEvents::COMMAND, function(ConsoleCommandEvent $event)
         {
@@ -177,7 +177,7 @@ class TenantResolver
         });
     }
 
-    private function registerConsoleTerminateEvent()
+    protected function registerConsoleTerminateEvent()
     {
         $this->getConsoleDispatcher()->addListener(ConsoleEvents::TERMINATE, function(ConsoleTerminateEvent $event)
         {

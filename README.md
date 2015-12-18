@@ -99,8 +99,8 @@ $tenant = $resolver->getActiveTenant(); // returns instance of \ThinkSayDo\EnvTe
 // fires a \ThinkSayDo\EnvTenant\Events\TenantActivatedEvent event
 $resolver->setActiveTenant(\ThinkSayDo\EnvTenant\Tenant $tenant);
 
-// purge tenant connection
-$resolver->purgeTenantConnection();
+// reconnect default connection
+$resolver->reconnectDefaultConnection();
 
 // reconnect tenant connection
 $resolver->reconnectTenantConnection();
@@ -181,7 +181,7 @@ foreach ($tenants as $tenant)
 $resolver->setActiveTenant($resolvedTenant);
 ```
 
-If you need to run the Artisan facade on the original default connection (ie not the tenant connection) simply call the ```TenantResolver::purgeTenantConnection()``` function first:
+If you need to run the Artisan facade on the original default connection (ie not the tenant connection) simply call the ```TenantResolver::reconnectDefaultConnection()``` function first:
 
 ```php
 // fetch the resolver class either via the app() function or by injecting
@@ -191,7 +191,7 @@ $resolver = app('ThinkSayDo\EnvTenant\Resolver');
 $resolvedTenant = $resolver->getActiveTenant();
 
 // purge the tenant from the default connection
-$resolver->purgeTenantConnection();
+$resolver->reconnectDefaultConnection();
 
 // call the command
 $result = \Artisan::call('commandname', ['array' => 'of', 'the' => 'arguments']);
