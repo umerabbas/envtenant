@@ -115,7 +115,10 @@ class TenantResolver
 
         event(new TenantNotResolvedEvent($domain));
 
-        throw new TenantNotResolvedException($domain);
+        if ( ! $this->app->runningInConsole())
+        {
+            throw new TenantNotResolvedException($domain);
+        }
 
         return;
     }
