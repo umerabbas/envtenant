@@ -38,6 +38,7 @@ $tenant->email = 'person@acmeinc.com';
 $tenant->subdomain = 'acme';
 $tenant->alias_domain = 'acmeinc.com';
 $tenant->connection = 'db1';
+$tenant->meta = ['phone' => '123-123-1234'];
 $tenant->save();
 ```
 
@@ -45,7 +46,7 @@ And that's it! Whenever your app is visited via http://acme.domain.com the defau
 
 ## Compatibility
 
-The EnvTenant package has been developed with Laravel 5.1.
+The EnvTenant package has been developed with Laravel 5.2.
 
 ## Introduction
 
