@@ -24,7 +24,7 @@ class Tenant extends Model
         'subdomain' => 'string',
         'alias_domain' => 'string',
         'connection' => 'string',
-        'meta' => 'collection'
+        'meta' => 'array'
     ];
 
     public function __construct(array $attributes = [])
