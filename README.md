@@ -18,7 +18,7 @@ Then hit composer dump-autoload
 After updating composer, add the Service Provider to the providers array in config/app.php.
 You should ideally have this inserted into the array just after the ```Illuminate\Database\DatabaseServiceProvider::class``` to ensure its boot method is called after the database is available but before any other Service Providers are booted.
 
-### Laravel 5.1:
+### Laravel 5.2:
 
 ```php
 ThinkSayDo\EnvTenant\TenantServiceProvider::class,
