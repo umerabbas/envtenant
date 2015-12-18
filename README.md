@@ -1,8 +1,9 @@
 ## EnvTenant
 
-The Laravel EnvTenant package is designed to enable multi-tenancy based database connections on the fly without having to access the database ```::connection('name')``` in every database call.
-It also allows Artisan commands to accept a --tenant option for multi-tenant migrations.
-This library was inspired by Tenantable, but removes the database configuration from the tables, instead relying on ENV configuration of databases and table prefixing.
+The Laravel EnvTenant package is designed to enable multi-tenancy based database connections on the fly without having
+to access the database ```::connection('name')``` in every database call. It also allows Artisan commands to accept
+a --tenant option for multi-tenant migrations. This library was forked from Tenantable, but removes the database
+configuration from the tables, instead relying on ENV configuration of databases and optional table prefixing.
 
 
 ## Installation
@@ -10,13 +11,14 @@ This library was inspired by Tenantable, but removes the database configuration 
 Just place require new package for your laravel installation via composer.json
 
 ```
-composer require thinksaydo/envtenant
+composer require thinksaydo/envtenant:2.*
 ```
 
 Then hit composer dump-autoload
 
-After updating composer, add the Service Provider to the providers array in config/app.php.
-You should ideally have this inserted into the array just after the ```Illuminate\Database\DatabaseServiceProvider::class``` to ensure its boot method is called after the database is available but before any other Service Providers are booted.
+After updating composer, add the service provider to the providers array in config/app.php.
+You should ideally have this inserted into the array after the Database and
+Error Handler Laravel service providers.
 
 ### Laravel 5.2:
 
@@ -24,7 +26,7 @@ You should ideally have this inserted into the array just after the ```Illuminat
 ThinkSayDo\EnvTenant\TenantServiceProvider::class,
 ```
 
-Run the migrations
+Run migrations to install the "tenants" table
 ```php 
 artisan migrate --path /vendor/thinksaydo/envtenant/migrations
 ```
@@ -42,7 +44,8 @@ $tenant->meta = ['phone' => '123-123-1234'];
 $tenant->save();
 ```
 
-And that's it! Whenever your app is visited via http://acme.domain.com the default database connection will be set with the above details.
+And that's it! Whenever your app is visited via http://acme.domain.com
+the default database connection will be set with the above details.
 
 ## Compatibility
 
@@ -50,13 +53,16 @@ The EnvTenant package has been developed with Laravel 5.2.
 
 ## Introduction
 
-The package simply resolves the correct connection details via the subdomain or domain accessed via the connection name saved in the database.
+The package simply resolves the correct connection details via the subdomain
+or domain accessed via the connection name saved in the database.
 
-Once resolved it sets the default database connection with the saved value and optionally sets the table prefix to the subdomain value.
+Once resolved it sets the default database connection with the saved value and
+optionally sets the table prefix to the subdomain value.
 
 This prevents the need to keep switching, or accessing the right connection depending on the tenant being accessed.
 
-This means all of your routes, models, etc will run on the active tenant database (unless explicitly stated via ```::connection('name')```)
+This means all of your routes, models, etc will run on the active tenant database
+(unless explicitly stated via ```::connection('name')```)
 
 ## Lifecycle
 
@@ -79,9 +85,11 @@ This is how it works during an artisan console request:
 
 ## The TenantResolver Class
 
-The ```\ThinkSayDo\EnvTenant\TenantResolver``` class is responsible for resolving and managing the active tenant during http and console access.
+The ```\ThinkSayDo\EnvTenant\TenantResolver``` class is responsible for resolving
+and managing the active tenant during http and console access.
 
-The ```TenantServiceProvider``` registers this class as a singleton for use anywhere in your app via method injection, or by using the ```app('ThinkSayDo\EnvTenant\TenantResolver')``` helper function.
+The ```TenantServiceProvider``` registers this class as a singleton for use anywhere in your app via method injection,
+or by using the ```app('ThinkSayDo\EnvTenant\TenantResolver')``` helper function.
 
 This class provides you with methods to access or alter the active tenant:
 
@@ -108,7 +116,8 @@ $resolver->reconnectTenantConnection();
 
 ## The Tenant Model
 
-The ```\ThinkSayDo\EnvTenant\Tenant``` class is a very simple Eloquent model, and a meta attribute which is cast to a ```Illuminate\Support\Collection``` when accessed.
+The ```\ThinkSayDo\EnvTenant\Tenant``` class is a very simple Eloquent model,
+and a meta attribute which is cast to an array when accessed.
 
 The model can be used in any way other Eloquent models are to create/read/update/delete:
 
@@ -138,29 +147,34 @@ The EnvTenant packages produces a few events which can be consumed in your appli
 
 ```\ThinkSayDo\EnvTenant\Events\TenantActivatedEvent(\ThinkSayDo\EnvTenant\Tenant $tenant)```
 
-This event is fired when a tenant is set as the active tenant and has a public ```$tenant``` property containing the ```\ThinkSayDo\EnvTenant\Tenant``` instance.
+This event is fired when a tenant is set as the active tenant and has a public ```$tenant``` property
+containing the ```\ThinkSayDo\EnvTenant\Tenant``` instance.
 
-**Note** this may not be as a result of the resolver but is also fired when a tenant is set to active programatically.
+**Note** this may not be as a result of the resolver but is also fired when a tenant is set to active manually.
 
 ```\ThinkSayDo\EnvTenant\Events\TenantResolvedEvent(\ThinkSayDo\EnvTenant\Tenant $tenant)```
 
-This event is fired when a tenant is resolved by the resolver and has a public ```$tenant``` property containing the ```\ThinkSayDo\EnvTenant\Tenant``` instance.
+This event is fired when a tenant is resolved by the resolver and has a public ```$tenant``` property
+containing the ```\ThinkSayDo\EnvTenant\Tenant``` instance.
 
 **Note** this is only fired once per request as the resolver is responsible for this event.
 
 ```\ThinkSayDo\EnvTenant\Events\TenantNotResolvedEvent(\ThinkSayDo\EnvTenant\Resolver $resolver)```
 
-This event is fired when by the resolver when it cannot resolve a tenant and has a public ```$resolver``` property containing the ```\ThinkSayDo\EnvTenant\Resolver``` instance.
+This event is fired when by the resolver when it cannot resolve a tenant and has a public ```$resolver``` property
+containing the ```\ThinkSayDo\EnvTenant\Resolver``` instance.
 
 **Note** this is only fired once per request as the resolver is responsible for this event.
 
 #### Notes on using Artisan::call();
 
-Using the ```Artisan``` Facade to run a command provides no access to alter the applications active tenant before running (unlike console artisan access).
+Using the ```Artisan``` Facade to run a command provides no access to alter the applications active tenant
+before running (unlike console artisan access).
 
 Because of this the currently active tenant will be used.
 
-To run the command foreach tenant you will need to fetch all tenants using ```Tenant::all()``` and run the ```Artisan::call()``` method inside a foreach after setting the active tenant like so:
+To run the command foreach tenant you will need to fetch all tenants using ```Tenant::all()``` and
+run the ```Artisan::call()``` method inside a foreach after setting the active tenant like so:
 
 ```php
 // fetch the resolver class either via the app() function or by injecting
@@ -181,7 +195,8 @@ foreach ($tenants as $tenant)
 $resolver->setActiveTenant($resolvedTenant);
 ```
 
-If you need to run the Artisan facade on the original default connection (ie not the tenant connection) simply call the ```TenantResolver::reconnectDefaultConnection()``` function first:
+If you need to run the Artisan facade on the original default connection (ie not the tenant connection)
+simply call the ```TenantResolver::reconnectDefaultConnection()``` function first:
 
 ```php
 // fetch the resolver class either via the app() function or by injecting
