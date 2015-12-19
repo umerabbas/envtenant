@@ -136,19 +136,29 @@ $resolver->reconnectTenantConnection();
 Throughout the lifecycle events are fired allowing you to listen and customize behavior.
 
 Tenant activated:
-```ThinkSayDo\EnvTenant\Events\TenantActivatedEvent```
+```php
+ThinkSayDo\EnvTenant\Events\TenantActivatedEvent
+```
 
 Tenant resolved:
-```ThinkSayDo\EnvTenant\Events\TenantResolvedEvent```
+```php
+ThinkSayDo\EnvTenant\Events\TenantResolvedEvent
+```
 
 Tenant not resolved:
-```ThinkSayDo\EnvTenant\Events\TenantNotResolvedEvent```
+```php
+ThinkSayDo\EnvTenant\Events\TenantNotResolvedEvent
+```
 
 Tenant not resolved via the Web, an exception is thrown:
-```ThinkSayDo\EnvTenant\Events\TenantNotResolvedException```
+```php
+ThinkSayDo\EnvTenant\Events\TenantNotResolvedException
+```
 
 Generic event listener:
-```ThinkSayDo\EnvTenant\Events\TenantNotResolvedListener```
+```php
+ThinkSayDo\EnvTenant\Events\TenantNotResolvedListener
+```
 
 
 ## Hope this helps! Report issues or ideas.
