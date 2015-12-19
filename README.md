@@ -61,7 +61,7 @@ the default database connection will be set to "db1", the table prefix will swit
 will be set with tenant details allowing you to access values from your views or application.
 
 
-## Advanced EntTenant Usage
+## Advanced EnvTenant Usage
 
 ### Artisan
 
