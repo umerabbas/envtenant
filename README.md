@@ -133,6 +133,8 @@ $resolver->reconnectTenantConnection();
 
 ### Events
 
+Throughout the lifecycle events are fired allowing you to listen and customize behavior.
+
 Tenant activated:
 ```ThinkSayDo\EnvTenant\Events\TenantActivatedEvent```
 
