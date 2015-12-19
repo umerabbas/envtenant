@@ -1,37 +1,49 @@
-## EnvTenant
+## Laravel EnvTenant 2.1.*
 
-The Laravel EnvTenant package is designed to enable multi-tenancy based database connections on the fly without having
-to access the database ```::connection('name')``` in every database call. It also allows Artisan commands to accept
-a --tenant option for multi-tenant migrations. This library was forked from Tenantable, but removes the database
-configuration from the tables, instead relying on ENV configuration of databases and optional table prefixing.
+The Laravel 5.2 EnvTenant package enables you to easily add multi-tenant capabilities to your application.
+This package is designed using a minimalist approach providing just the essentials - no views, routes,
+or configs. Just drop it in, run the migration, and start adding tenants. Your applications will
+have access to current tenant information through the dynamically set config('tenant') values.
+Optionally, you can let applications reconnect to the default master database so a tenant
+could manage all tenant other accounts for example. And, perhaps the best part, Artisan
+is completely multi-tenant aware! Just add the --tenant option to any command to
+run that command on one or all tenants. Works on migrations, queueing, etc.!
+
+Laravel EnvTenant was originally forked from the Laravel Tenantable project by @leemason
+Lee is to be credited with doing a lot of the hard work to figure out how to globally
+add the --tenant option to Artisan and for inspiration for the idea. Where this
+project differs is in it's approach to managing database connection settings.
+Tenantable stores settings in the database and offers unlimited domains.
+EnvTenant relies on your ENV and Database config and stores just the
+conneciton name in the table and only allows one subdomain and
+domain per tenant, which is most often plenty for most apps.
+EnvTenant also throws TenantNotResolvedException when
+tenants are not found, which you can catch.
 
 
-## Installation
+## Simple Installation & Usage
 
-Just place require new package for your laravel installation via composer.json
+Composer install:
 
 ```
-composer require thinksaydo/envtenant:2.*
+composer require thinksaydo/envtenant:2.1.*
 ```
 
-Then hit composer dump-autoload
+Then run composer dump-autoload.
 
-After updating composer, add the service provider to the providers array in config/app.php.
-You should ideally have this inserted into the array after the Database and
-Error Handler Laravel service providers.
-
-### Laravel 5.2:
+Service provider install:
 
 ```php
 ThinkSayDo\EnvTenant\TenantServiceProvider::class,
 ```
 
-Run migrations to install the "tenants" table
+Tenants database table install:
+
 ```php 
 artisan migrate --path /vendor/thinksaydo/envtenant/migrations
 ```
 
-Then in your workflow create tenants the Eloquent way:
+Tenant creation (just uses a standard Eloquent model):
 
 ```php
 $tenant = new \ThinkSayDo\EnvTenant\Tenant();
@@ -44,173 +56,97 @@ $tenant->meta = ['phone' => '123-123-1234'];
 $tenant->save();
 ```
 
-And that's it! Whenever your app is visited via http://acme.domain.com
-the default database connection will be set with the above details.
+And you're done! Minimalist, simple. Whenever your app is visited via http://acme.domain.com or http://acmeinc.com
+the default database connection will be set to "db1", the table prefix will switch to "acme_", and config('tenant')
+will be set with tenant details allowing you to access values from your views or application.
 
-## Compatibility
 
-The EnvTenant package has been developed with Laravel 5.2.
+## Advanced EntTenant Usage
 
-## Introduction
-
-The package simply resolves the correct connection details via the subdomain
-or domain accessed via the connection name saved in the database.
-
-Once resolved it sets the default database connection with the saved value and
-optionally sets the table prefix to the subdomain value.
-
-This prevents the need to keep switching, or accessing the right connection depending on the tenant being accessed.
-
-This means all of your routes, models, etc will run on the active tenant database
-(unless explicitly stated via ```::connection('name')```)
-
-## Lifecycle
-
-This is how things work during a HTTP request:
-
-- EnvTenant copies the name of the default database connection.
-- EnvTenant gets the host string via the ```Http\Request::getHost()``` method.
-- EnvTenant gets the subdomain string via the ```Http\Request::getHost()``` method, getting the first portion of the domain.
-- EnvTenant looks for a tenant in the database that matches this host or subdomain.
-- Then the default database connection is changed to 'connection' and the old connection purged (disconnected/reconnected).
-- If a match isn't found a TenantNotResolved event is fired and no config changes happen.
-
-This is how it works during an artisan console request:
-
-- EnvTenant copies the name of the default database connection.
-- EnvTenant registers a console option of ```--tenant``` where you can supply the tenant record id, subdomain, domain, or */all to run for all tenants.
-- EnvTenant checks to see if the tenant option is provided, if it isn't no tenant is resolved. The command runs normally.
-- If a match is found it resolves the tenant (settings the tenant database connection) before executing the command.
-- If you provide ```--tenant``` with either a ```*``` or the string ```all``` EnvTenant will run the command foreach tenant found in the database, setting the active tenant before running each time.
-
-## The TenantResolver Class
-
-The ```\ThinkSayDo\EnvTenant\TenantResolver``` class is responsible for resolving
-and managing the active tenant during http and console access.
-
-The ```TenantServiceProvider``` registers this class as a singleton for use anywhere in your app via method injection,
-or by using the ```app('ThinkSayDo\EnvTenant\TenantResolver')``` helper function.
-
-This class provides you with methods to access or alter the active tenant:
+### Artisan
 
 ```php
-// fetch the resolver class either via the app() function or by injecting
+// migrate master database tables
+php artisan migrate
+
+// migrate specific tenant database tables
+php artisan migrate --tenant=acme
+
+// migrate all tenant database tables
+php artisan migrate --tenant=*
+```
+
+The --tenant option works on all Artisan commands.
+
+
+### Tenant
+
+The ```\ThinkSayDo\EnvTenant\Tenant``` class is a simple Eloquent model providing basic tenant settings.
+
+```php
+$tenant = new \ThinkSayDo\EnvTenant\Tenant();
+
+// The unique name field identifies the tenant profile
+$tenant->name = 'ACME Inc.';
+
+// The non-unique email field lets you email tenants
+$tenant->email = 'person@acmeinc.com';
+
+// The unique subdomain field represents the subdomain portion of a domain and the database table prefix
+$tenant->subdomain = 'acme';
+
+// The unique alias_domain field represents an alternate full domain that can be used to access the tenant
+$tenant->alias_domain = 'acmeinc.com';
+
+// The non-unique connection field stores the Laravel database connection name
+$tenant->connection = 'db1';
+
+// The meta field is cast to an array and allows you to store any extra values you might need to know
+$tenant->meta = ['phone' => '123-123-1234'];
+
+$tenant->save();
+```
+
+
+### TenantResolver
+
+The ```\ThinkSayDo\EnvTenant\TenantResolver``` class is responsible for resolving and managing the active tenant
+during Web and Artisan access.
+
+```php
+// get the resolver instance
 $resolver = app('ThinkSayDo\EnvTenant\TenantResolver');
 
-// check if a tenant was resolved
-$resolver->isResolved(); // returns bool
+// check if valid tenant
+$resolver->isResolved();
 
-// get the active tenant model
-$tenant = $resolver->getActiveTenant(); // returns instance of \ThinkSayDo\EnvTenant\Tenant or null
+// get the active tenant (returns Tenant model or null)
+$tenant = $resolver->getActiveTenant();
 
-// set the active tenant
-// fires a \ThinkSayDo\EnvTenant\Events\TenantActivatedEvent event
-$resolver->setActiveTenant(\ThinkSayDo\EnvTenant\Tenant $tenant);
-
-// reconnect default connection
+// reconnect default connection enabling access to "tenants" table
 $resolver->reconnectDefaultConnection();
 
-// reconnect tenant connection
+// reconnect tenant connection disabling access to "tenants" table
 $resolver->reconnectTenantConnection();
 ```
 
-## The Tenant Model
 
-The ```\ThinkSayDo\EnvTenant\Tenant``` class is a very simple Eloquent model,
-and a meta attribute which is cast to an array when accessed.
+### Events
 
-The model can be used in any way other Eloquent models are to create/read/update/delete:
+Tenant activated:
+```ThinkSayDo\EnvTenant\Events\TenantActivatedEvent```
 
-```php
-// create by mass assignment
-\ThinkSayDo\EnvTenant\Tenant::create([
-    'name' => 'Acme Inc.'
-    ....
-]);
+Tenant resolved:
+```ThinkSayDo\EnvTenant\Events\TenantResolvedEvent```
 
-// call then save
-$tenant = \ThinkSayDo\EnvTenant\Tenant();
-$tenant->name = 'Acme Inc.';
-...
-$tenant->save();
+Tenant not resolved:
+```ThinkSayDo\EnvTenant\Events\TenantNotResolvedEvent```
 
-// fetch all tenants
-$tenant = \ThinkSayDo\EnvTenant\Tenant::all();
+Tenant not resolved via the Web, an exception is thrown:
+```ThinkSayDo\EnvTenant\Events\TenantNotResolvedException```
 
-// fetch by subdomain
-$tenant = \ThinkSayDo\EnvTenant\Tenant::where('subdomain', 'acme')->first();
-```
+Generic event listener:
+```ThinkSayDo\EnvTenant\Events\TenantNotResolvedListener```
 
-## Events
 
-The EnvTenant packages produces a few events which can be consumed in your application
-
-```\ThinkSayDo\EnvTenant\Events\TenantActivatedEvent(\ThinkSayDo\EnvTenant\Tenant $tenant)```
-
-This event is fired when a tenant is set as the active tenant and has a public ```$tenant``` property
-containing the ```\ThinkSayDo\EnvTenant\Tenant``` instance.
-
-**Note** this may not be as a result of the resolver but is also fired when a tenant is set to active manually.
-
-```\ThinkSayDo\EnvTenant\Events\TenantResolvedEvent(\ThinkSayDo\EnvTenant\Tenant $tenant)```
-
-This event is fired when a tenant is resolved by the resolver and has a public ```$tenant``` property
-containing the ```\ThinkSayDo\EnvTenant\Tenant``` instance.
-
-**Note** this is only fired once per request as the resolver is responsible for this event.
-
-```\ThinkSayDo\EnvTenant\Events\TenantNotResolvedEvent(\ThinkSayDo\EnvTenant\Resolver $resolver)```
-
-This event is fired when by the resolver when it cannot resolve a tenant and has a public ```$resolver``` property
-containing the ```\ThinkSayDo\EnvTenant\Resolver``` instance.
-
-**Note** this is only fired once per request as the resolver is responsible for this event.
-
-#### Notes on using Artisan::call();
-
-Using the ```Artisan``` Facade to run a command provides no access to alter the applications active tenant
-before running (unlike console artisan access).
-
-Because of this the currently active tenant will be used.
-
-To run the command foreach tenant you will need to fetch all tenants using ```Tenant::all()``` and
-run the ```Artisan::call()``` method inside a foreach after setting the active tenant like so:
-
-```php
-// fetch the resolver class either via the app() function or by injecting
-$resolver = app('ThinkSayDo\EnvTenant\Resolver');
-
-// store the current tenant
-$resolvedTenant = $resolver->getActiveTenant();
-
-// fetch all tenants and loop / call command for each
-$tenants = \ThinkSayDo\EnvTenant\Tenant::all();
-foreach ($tenants as $tenant)
-{
-    $resolver->setActiveTenant($tenant);
-    $result = \Artisan::call('commandname', ['array' => 'of', 'the' => 'arguments']);
-}
-
-// restore the correct tenant
-$resolver->setActiveTenant($resolvedTenant);
-```
-
-If you need to run the Artisan facade on the original default connection (ie not the tenant connection)
-simply call the ```TenantResolver::reconnectDefaultConnection()``` function first:
-
-```php
-// fetch the resolver class either via the app() function or by injecting
-$resolver = app('ThinkSayDo\EnvTenant\Resolver');
-
-// store the current tenant
-$resolvedTenant = $resolver->getActiveTenant();
-
-// purge the tenant from the default connection
-$resolver->reconnectDefaultConnection();
-
-// call the command
-$result = \Artisan::call('commandname', ['array' => 'of', 'the' => 'arguments']);
-
-// restore the tenant connection as the default
-$resolver->reconnectTenantConnection();
-```
+## Hope this helps! Report issues or ideas.
