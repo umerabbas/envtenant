@@ -1,6 +1,6 @@
 ## Laravel EnvTenant 2.2.*
 
-*Version 2.2.\* Changes:*
+Version 2.2.* Changes:
 
 - Removed generic listener
 - Removed public setDefaultConnection method
@@ -16,6 +16,9 @@ Optionally, you can let applications reconnect to the default master database so
 could manage all tenant other accounts for example. And, perhaps the best part, Artisan
 is completely multi-tenant aware! Just add the --tenant option to any command to
 run that command on one or all tenants. Works on migrations, queueing, etc.!
+
+EnvTenant also offers a TenantContract, triggers Laravel events, and throws a TenantNotResolvedException,
+so you can easily add in custom functionality and tweak it for your needs.
 
 Laravel EnvTenant was originally forked from the Laravel Tenantable project by @leemason
 Lee is to be credited with doing a lot of the hard work to figure out how to globally
