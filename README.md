@@ -141,15 +141,37 @@ $resolver->reconnectDefaultConnection();
 $resolver->reconnectTenantConnection();
 ```
 
-If you need even more flexibility, you can implement the ```ThinkSayDo\EnvTenant\Contracts\TenantContract```
-interface on a custom model and inject that as the active tenant.
+If you want to use a custom model, register a custom service provider that binds a singleton to the TenantContract
+and resolves to an instance of your custom tenant model. EnvTenant will automatically defer to your custom model
+as long as you load your service provider before loading the EnvTenant\TenantServiceProvider.
+
+Create this example service provider in your app/Providers folder as CustomTenantServiceProvider.php:
 
 ```php
-// set the active tenant  to a
-$activeTenant = new CustomTenant();
-$resolver->setActiveTenant($activeTenant);
+<?php
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use App\Tenant;
+
+class CustomTenantServiceProvider extends ServiceProvider
+{
+    public function boot()
+    {
+        $this->app->singleton('TenantContract', function()
+        {
+            return new Tenant();
+        });
+    }
+
+    public function register()
+    {
+        //
+    }
+}
 ```
 
+Then register ```App\Providers\CustomTenantServiceProvider::class``` in your config/app.php file.
 
 ### Events
 

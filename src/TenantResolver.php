@@ -11,7 +11,6 @@ use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Illuminate\Console\Application as Artisan;
 use ThinkSayDo\EnvTenant\Events\TenantActivatedEvent;
 use ThinkSayDo\EnvTenant\Events\TenantResolvedEvent;
 use ThinkSayDo\EnvTenant\Events\TenantNotResolvedEvent;
@@ -21,14 +20,16 @@ use ThinkSayDo\EnvTenant\Contracts\TenantContract;
 class TenantResolver
 {
     protected $app = null;
+    protected $tenant = null;
     protected $request = null;
     protected $activeTenant = null;
     protected $consoleDispatcher = false;
     protected $defaultConnection = null;
 
-    public function __construct(Application $app)
+    public function __construct(Application $app, TenantContract $tenant)
     {
         $this->app = $app;
+        $this->tenant = $tenant;
         $this->defaultConnection = $this->app['db']->getDefaultConnection();
     }
 
@@ -74,7 +75,7 @@ class TenantResolver
         {
             $domain = (new ArgvInput())->getParameterOption('--tenant', null);
 
-            $model = new Tenant();
+            $model = $this->tenant;
             $tenant = $model
                 ->where('subdomain', '=', $domain)
                 ->orWhere('alias_domain', '=', $domain)
@@ -87,14 +88,14 @@ class TenantResolver
             $domain = $this->request->getHost();
             $subdomain = explode('.', $domain)[0];
 
-            $model = new Tenant();
+            $model = $this->tenant;
             $tenant = $model
                 ->where('subdomain', '=', $subdomain)
                 ->orWhere('alias_domain', '=', $domain)
                 ->first();
         }
 
-        if ($tenant instanceof Tenant)
+        if ($tenant instanceof TenantContract)
         {
             $this->setActiveTenant($tenant);
 
@@ -200,7 +201,8 @@ class TenantResolver
                     $output = $event->getOutput();
                     $exitCode = $event->getExitCode();
 
-                    $tenants = Tenant::all();
+                    $model = $this->tenant;
+                    $tenants = $model->get();
 
                     foreach($tenants as $tenant)
                     {

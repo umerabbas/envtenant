@@ -1,16 +1,21 @@
 <?php
 namespace ThinkSayDo\EnvTenant;
 
-use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\ServiceProvider;
 
 class TenantServiceProvider extends ServiceProvider
 {
     public function register()
     {
+        $this->app->bindIf('TenantContract', function()
+        {
+            return new Tenant();
+        }, true);
+
         $this->app->singleton('tenant', function($app)
         {
-            return new TenantResolver($app);
+            $tenant = app('TenantContract');
+            return new TenantResolver($app, $tenant);
         });
     }
 
