@@ -31,7 +31,7 @@ class TenantResolver
         $this->defaultConnection = $this->app['db']->getDefaultConnection();
     }
 
-    public function setActiveTenant(Tenant $activeTenant)
+    public function setActiveTenant(TenantContract $activeTenant)
     {
         $this->activeTenant = $activeTenant;
         $this->setDefaultConnection($activeTenant);
@@ -44,22 +44,14 @@ class TenantResolver
         return $this->activeTenant;
     }
 
-    public function setDefaultConnection($activeTenant)
+    public function reconnectDefaultConnection()
     {
-        $hasConnection = ! empty($activeTenant->connection);
-        $connection = $hasConnection ? $activeTenant->connection : $this->defaultConnection;
-        $prefix = ($hasConnection && ! empty($activeTenant->subdomain)) ? $activeTenant->subdomain . '_' : '';
+        $this->setDefaultConnection($this->defaultConnection);
+    }
 
-        config()->set('database.default', $connection);
-        config()->set('database.connections.' . $connection . '.prefix', $prefix);
-
-        if ($hasConnection)
-        {
-            config()->set('tenant', $activeTenant->toArray());
-            $this->app['db']->purge($this->defaultConnection);
-        }
-
-        $this->app['db']->setDefaultConnection($connection);
+    public function reconnectTenantConnection()
+    {
+        $this->setDefaultConnection($this->getActiveTenant());
     }
 
     public function resolveTenant()
@@ -73,16 +65,6 @@ class TenantResolver
     public function isResolved()
     {
         return ! is_null($this->getActiveTenant());
-    }
-
-    public function reconnectDefaultConnection()
-    {
-        $this->setDefaultConnection($this->defaultConnection);
-    }
-
-    public function reconnectTenantConnection()
-    {
-        $this->setDefaultConnection($this->getActiveTenant());
     }
 
     protected function resolveRequest()
@@ -128,6 +110,24 @@ class TenantResolver
         }
 
         return;
+    }
+
+    protected function setDefaultConnection($activeTenant)
+    {
+        $hasConnection = ! empty($activeTenant->connection);
+        $connection = $hasConnection ? $activeTenant->connection : $this->defaultConnection;
+        $prefix = ($hasConnection && ! empty($activeTenant->subdomain)) ? $activeTenant->subdomain . '_' : '';
+
+        config()->set('database.default', $connection);
+        config()->set('database.connections.' . $connection . '.prefix', $prefix);
+
+        if ($hasConnection)
+        {
+            config()->set('tenant', $activeTenant->toArray());
+            $this->app['db']->purge($this->defaultConnection);
+        }
+
+        $this->app['db']->setDefaultConnection($connection);
     }
 
     protected function getConsoleDispatcher()

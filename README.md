@@ -1,4 +1,12 @@
-## Laravel EnvTenant 2.1.*
+## Laravel EnvTenant 2.2.*
+
+*Version 2.2.\* Changes:*
+
+- Removed generic listener
+- Removed public setDefaultConnection method
+- Changed resolver registration to be app('tenant')
+- Added TenantContract to enable custom models
+- Updated documentation
 
 The Laravel 5.2 EnvTenant package enables you to easily add multi-tenant capabilities to your application.
 This package is designed using a minimalist approach providing just the essentials - no views, routes,
@@ -111,11 +119,11 @@ $tenant->save();
 ### TenantResolver
 
 The ```\ThinkSayDo\EnvTenant\TenantResolver``` class is responsible for resolving and managing the active tenant
-during Web and Artisan access.
+during Web and Artisan access. You can access the resolver class using ```app('tenant')```.
 
 ```php
 // get the resolver instance
-$resolver = app('ThinkSayDo\EnvTenant\TenantResolver');
+$resolver = app('tenant');
 
 // check if valid tenant
 $resolver->isResolved();
@@ -128,6 +136,15 @@ $resolver->reconnectDefaultConnection();
 
 // reconnect tenant connection disabling access to "tenants" table
 $resolver->reconnectTenantConnection();
+```
+
+If you need even more flexibility, you can implement the ```ThinkSayDo\EnvTenant\Contracts\TenantContract```
+interface on a custom model and inject that as the active tenant.
+
+```php
+// set the active tenant  to a
+$activeTenant = new CustomTenant();
+$resolver->setActiveTenant($activeTenant);
 ```
 
 
@@ -155,10 +172,5 @@ Tenant not resolved via the Web, an exception is thrown:
 ThinkSayDo\EnvTenant\Events\TenantNotResolvedException
 ```
 
-Generic event listener:
-```php
-ThinkSayDo\EnvTenant\Events\TenantNotResolvedListener
-```
 
-
-## Hope this helps! Report issues or ideas.
+### Enjoy! Report issues or ideas.

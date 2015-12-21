@@ -4,8 +4,9 @@ namespace ThinkSayDo\EnvTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use ThinkSayDo\EnvTenant\Contracts\TenantContract;
 
-class Tenant extends Model
+class Tenant extends Model implements TenantContract
 {
     protected $table = 'tenants';
 
@@ -34,17 +35,67 @@ class Tenant extends Model
         parent::__construct($attributes);
     }
 
+    public function getNameAttribute()
+    {
+        return $this->attributes['name'];
+    }
+
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = trim($value);
+    }
+
+    public function getEmailAttribute()
+    {
+        return $this->attributes['email'];
+    }
+
+    public function setEmailAttribute($value)
+    {
+        $this->attributes['email'] = trim($value);
+    }
+
+    public function getSubdomainAttribute()
+    {
+        return $this->attributes['subdomain'];
+    }
+
     public function setSubdomainAttribute($value)
     {
-        $this->attributes['subdomain'] = $this->alphaOnly($value);
+        $this->attributes['subdomain'] = $this->_alphaOnly($value);
+    }
+
+    public function getAliasDomainAttribute($value)
+    {
+        return $this->attributes['alias_domain'];
     }
 
     public function setAliasDomainAttribute($value)
     {
-        $this->attributes['alias_domain'] = $this->alphaOnly($value);
+        $this->attributes['alias_domain'] = $this->_alphaOnly($value);
     }
 
-    protected function alphaOnly($value)
+    public function getConnectionAttribute()
+    {
+        return $this->attributes['connection'];
+    }
+
+    public function setConnectionAttribute($value)
+    {
+        $this->attributes['connection'] = trim($value);
+    }
+
+    public function getMetaAttribute()
+    {
+        return json_decode($this->attributes['meta'], true);
+    }
+
+    public function setMetaAttribute($value)
+    {
+        $this->attributes['meta'] = json_encode($value);
+    }
+
+    protected function _alphaOnly($value)
     {
         return preg_replace('/[^[:alnum:]\-\.]/u', '', $value);
     }
