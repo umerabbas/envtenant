@@ -14,9 +14,9 @@ class TenantServiceProvider extends ServiceProvider
         });
     }
 
-    public function boot(TenantResolver $resolver)
+    public function boot()
     {
+        $resolver = app('tenant');
         $resolver->resolveTenant();
     }
-
 }
