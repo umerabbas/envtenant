@@ -42,16 +42,16 @@ composer require thinksaydo/envtenant:2.2.*
 
 Then run composer dump-autoload.
 
-Service provider install:
-
-```php
-ThinkSayDo\EnvTenant\TenantServiceProvider::class,
-```
-
 Tenants database table install:
 
 ```php 
 artisan migrate --path /vendor/thinksaydo/envtenant/migrations
+```
+
+Service provider install:
+
+```php
+ThinkSayDo\EnvTenant\TenantServiceProvider::class,
 ```
 
 Tenant creation (just uses a standard Eloquent model):
