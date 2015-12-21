@@ -16,6 +16,7 @@ use ThinkSayDo\EnvTenant\Events\TenantActivatedEvent;
 use ThinkSayDo\EnvTenant\Events\TenantResolvedEvent;
 use ThinkSayDo\EnvTenant\Events\TenantNotResolvedEvent;
 use ThinkSayDo\EnvTenant\Events\TenantNotResolvedException;
+use ThinkSayDo\EnvTenant\Contracts\TenantContract;
 
 class TenantResolver
 {
