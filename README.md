@@ -37,7 +37,7 @@ tenants are not found, which you can catch.
 Composer install:
 
 ```
-composer require thinksaydo/envtenant:2.1.*
+composer require thinksaydo/envtenant:2.2.*
 ```
 
 Then run composer dump-autoload.
