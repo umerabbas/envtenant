@@ -46,6 +46,23 @@ class TenantResolver
         return $this->activeTenant;
     }
 
+    public function getAllTenants()
+    {
+        return $this->tenant->get();
+    }
+
+    public function mapAllTenants($callback)
+    {
+        $tenants = $this->getAllTenants();
+
+        foreach($tenants as $tenant)
+        {
+            $this->setActiveTenant($tenant);
+
+            $callback($tenant);
+        }
+    }
+
     public function reconnectDefaultConnection()
     {
         $this->setDefaultConnection($this->defaultConnection);
@@ -75,23 +92,41 @@ class TenantResolver
         {
             $domain = (new ArgvInput())->getParameterOption('--tenant', null);
 
-            $model = $this->tenant;
-            $tenant = $model
-                ->where('subdomain', '=', $domain)
-                ->orWhere('alias_domain', '=', $domain)
-                ->orWhere('id', '=', $domain)
-                ->first();
+            try
+            {
+                $model = $this->tenant;
+                $tenant = $model
+                    ->where('subdomain', '=', $domain)
+                    ->orWhere('alias_domain', '=', $domain)
+                    ->orWhere('id', '=', $domain)
+                    ->first();
+            }
+            catch (\Exception $e)
+            {
+                $tenant = null;
+                echo $e->getMessage();
+            }
         }
         else
         {
             $this->request = $this->app->make(Request::class);
             $domain = $this->request->getHost();
             $subdomain = explode('.', $domain)[0];
+            $id = $this->request->segment(1);
 
             $model = $this->tenant;
             $tenant = $model
-                ->where('subdomain', '=', $subdomain)
-                ->orWhere('alias_domain', '=', $domain)
+                ->where(function($query) use ($subdomain, $domain)
+                {
+                    $query->where('subdomain', '=', $subdomain);
+                    $query->orWhere('alias_domain', '=', $domain);
+                })
+                ->orWhere(function($query) use ($id)
+                {
+                    $query->whereNull('subdomain');
+                    $query->whereNull('alias_domain');
+                    $query->where('id', $id);
+                })
                 ->first();
         }
 
@@ -201,8 +236,7 @@ class TenantResolver
                     $output = $event->getOutput();
                     $exitCode = $event->getExitCode();
 
-                    $model = $this->tenant;
-                    $tenants = $model->get();
+                    $tenants = $this->getAllTenants();
 
                     foreach($tenants as $tenant)
                     {

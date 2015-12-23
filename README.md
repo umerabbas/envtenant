@@ -1,6 +1,12 @@
 ## Laravel EnvTenant 2.2.*
 
-Version 2.2.* Changes:
+Version 2.2.3 Changes:
+
+- Added ability to get all Tenants
+- Added ability to activate and run a callback on all Tenant models
+- Added ability to get Tenant by ID instead of subdomain or domain (example.com/{tenantId})
+
+Version 2.2.2 Changes:
 
 - Removed generic listener
 - Removed public setDefaultConnection method
@@ -133,6 +139,12 @@ $resolver->isResolved();
 
 // get the active tenant (returns Tenant model or null)
 $tenant = $resolver->getActiveTenant();
+
+// get all tenants (returns collection of Tenant models or null)
+$tenants = $resolver->getAllTenants();
+
+// activate and run all tenants through a callback function
+$resolver->mapAllTenants(function ($tenant) {});
 
 // reconnect default connection enabling access to "tenants" table
 $resolver->reconnectDefaultConnection();
