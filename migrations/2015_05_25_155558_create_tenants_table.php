@@ -18,10 +18,10 @@ class CreateTenantsTable extends Migration
             $table->engine = 'InnoDB';
 
             $table->increments('id');
-            $table->string('name')->unique();
-            $table->string('email')->index();
-            $table->string('subdomain')->unique();
-            $table->string('alias_domain')->unique();
+            $table->string('name')->unique()->nullable();
+            $table->string('email')->index()->nullable();
+            $table->string('subdomain')->unique()->nullable();
+            $table->string('alias_domain')->unique()->nullable();
             $table->string('connection');
             $table->text('meta');
 
