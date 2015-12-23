@@ -110,9 +110,11 @@ $tenant->name = 'ACME Inc.';
 $tenant->email = 'person@acmeinc.com';
 
 // The unique subdomain field represents the subdomain portion of a domain and the database table prefix
+// Set subdomain and alias_domain field to NULL to access tenant by ID instead
 $tenant->subdomain = 'acme';
 
 // The unique alias_domain field represents an alternate full domain that can be used to access the tenant
+// Set subdomain and alias_domain field to NULL to access tenant by ID instead
 $tenant->alias_domain = 'acmeinc.com';
 
 // The non-unique connection field stores the Laravel database connection name
