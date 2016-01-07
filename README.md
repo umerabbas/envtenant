@@ -212,4 +212,16 @@ ThinkSayDo\EnvTenant\Events\TenantNotResolvedException
 ```
 
 
+# Securing sessions
+
+Sessions in Laravel can be locked down to a domain, preventing users from jumping across domains and potentially
+retaining their authentication. Here's some quick example code that might be useful. I'm sure there are more
+sophisticated ways to manage this. In the future, I may also add some cross domain security to EnvTenant.
+
+In your session config file, change the domain value to be something like this:
+
+```php
+'domain' => ( ! empty($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : null,
+```
+
 ### Enjoy! Report issues or ideas.
