@@ -9,6 +9,7 @@ use ThinkSayDo\EnvTenant\Contracts\TenantContract;
 class Tenant extends Model implements TenantContract
 {
     protected $table = 'tenants';
+    protected $connection = 'envtenant';
 
     protected $fillable = [
         'name',

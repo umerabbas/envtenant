@@ -25,12 +25,15 @@ class TenantResolver
     protected $activeTenant = null;
     protected $consoleDispatcher = false;
     protected $defaultConnection = null;
+    protected $tenantConnection = null;
 
     public function __construct(Application $app, TenantContract $tenant)
     {
         $this->app = $app;
         $this->tenant = $tenant;
         $this->defaultConnection = $this->app['db']->getDefaultConnection();
+        $this->tenantConnection = 'envtenant';
+        config()->set('database.connections.' . $this->tenantConnection, config('database.connections.' . $this->defaultConnection));
     }
 
     public function setActiveTenant(TenantContract $activeTenant)
@@ -65,7 +68,7 @@ class TenantResolver
 
     public function reconnectDefaultConnection()
     {
-        $this->setDefaultConnection($this->defaultConnection);
+        $this->setDefaultConnection($this->tenantConnection);
     }
 
     public function reconnectTenantConnection()
@@ -152,7 +155,7 @@ class TenantResolver
     protected function setDefaultConnection($activeTenant)
     {
         $hasConnection = ! empty($activeTenant->connection);
-        $connection = $hasConnection ? $activeTenant->connection : $this->defaultConnection;
+        $connection = $hasConnection ? $activeTenant->connection : $this->tenantConnection;
         $prefix = ($hasConnection && ! empty($activeTenant->subdomain)) ? $activeTenant->subdomain . '_' : '';
 
         if ($hasConnection && empty($activeTenant->subdomain))
