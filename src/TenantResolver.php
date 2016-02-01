@@ -133,6 +133,11 @@ class TenantResolver
                 ->first();
         }
 
+        if (
+            empty($tenant->connection) ||
+            ( ! empty($tenant->connection) && $tenant->connection === 'pending')
+        ) $tenant = null;
+
         if ($tenant instanceof TenantContract)
         {
             $this->setActiveTenant($tenant);
