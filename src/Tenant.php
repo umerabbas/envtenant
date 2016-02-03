@@ -63,7 +63,7 @@ class Tenant extends Model implements TenantContract
 
     public function setSubdomainAttribute($value)
     {
-        $this->attributes['subdomain'] = $this->_alphaOnly($value);
+        $this->attributes['subdomain'] = mb_strtolower($this->_alphaOnly($value));
     }
 
     public function getAliasDomainAttribute($value)
@@ -73,7 +73,7 @@ class Tenant extends Model implements TenantContract
 
     public function setAliasDomainAttribute($value)
     {
-        $this->attributes['alias_domain'] = $this->_alphaOnly($value);
+        $this->attributes['alias_domain'] = mb_strtolower($this->_alphaOnly($value));
     }
 
     public function getConnectionAttribute()
@@ -83,7 +83,7 @@ class Tenant extends Model implements TenantContract
 
     public function setConnectionAttribute($value)
     {
-        $this->attributes['connection'] = trim($value);
+        $this->attributes['connection'] = strtolower(trim($value));
     }
 
     public function getMetaAttribute()
