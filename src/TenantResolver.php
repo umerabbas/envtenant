@@ -192,17 +192,16 @@ class TenantResolver
 
     protected function registerTenantConsoleArgument()
     {
-        $this->app['events']->listen('Illuminate\Console\Events\ArtisanStarting', function(ArtisanStarting $app)
+        $this->app['events']->listen(ArtisanStarting::class, function($event)
         {
-            $app = $app->artisan;
-            $definition = $app->getDefinition();
+            $definition = $event->artisan->getDefinition();
 
             $definition->addOption(
                 new InputOption('--tenant', null, InputOption::VALUE_OPTIONAL, 'The tenant subdomain or alias domain the command should be run for. Use * or all for every tenant.')
             );
 
-            $app->setDefinition($definition);
-            $app->setDispatcher($this->getConsoleDispatcher());
+            $event->artisan->setDefinition($definition);
+            $event->artisan->setDispatcher($this->getConsoleDispatcher());
         });
     }
 
