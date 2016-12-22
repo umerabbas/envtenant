@@ -1,5 +1,9 @@
 ## Laravel EnvTenant 2.2.*
 
+Version 2.2.9 Changes:
+
+- Laravel 5.3 support.
+
 Version 2.2.6 Changes:
 
 - Set connection column to 'pending' to block tenant access until admin approval.
