@@ -1,18 +1,16 @@
 <?php
-namespace ThinkSayDo\EnvTenant\Events;
+namespace UmerAbbas\EnvTenant\Events;
 
 use Illuminate\Queue\SerializesModels;
-use ThinkSayDo\EnvTenant\Tenant;
+use UmerAbbas\EnvTenant\Tenant;
 
-class TenantEvent
-{
-    use SerializesModels;
+class TenantEvent {
+	use SerializesModels;
 
-    public $tenant;
+	public $tenant;
 
-    public function __construct(Tenant $tenant)
-    {
-        $this->tenant = $tenant;
-    }
+	public function __construct(Tenant $tenant) {
+		$this->tenant = $tenant;
+	}
 
 }

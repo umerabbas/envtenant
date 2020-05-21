@@ -1,12 +1,10 @@
 <?php
-namespace ThinkSayDo\EnvTenant\Events;
+namespace UmerAbbas\EnvTenant\Events;
 
-class TenantNotResolvedEvent extends TenantEvent
-{
-    public $tenant = null;
+class TenantNotResolvedEvent extends TenantEvent {
+	public $tenant = null;
 
-    function __construct($tenant)
-    {
-        $this->tenant = $tenant;
-    }
+	function __construct($tenant) {
+		$this->tenant = $tenant;
+	}
 }

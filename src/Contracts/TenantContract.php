@@ -1,29 +1,28 @@
 <?php
-namespace ThinkSayDo\EnvTenant\Contracts;
+namespace UmerAbbas\EnvTenant\Contracts;
 
-interface TenantContract
-{
-    public function getNameAttribute();
+interface TenantContract {
+	public function getNameAttribute();
 
-    public function setNameAttribute($value);
+	public function setNameAttribute($value);
 
-    public function getEmailAttribute();
+	public function getEmailAttribute();
 
-    public function setEmailAttribute($value);
+	public function setEmailAttribute($value);
 
-    public function getSubdomainAttribute();
+	public function getSubdomainAttribute();
 
-    public function setSubdomainAttribute($value);
+	public function setSubdomainAttribute($value);
 
-    public function getAliasDomainAttribute($value);
+	public function getAliasDomainAttribute($value);
 
-    public function setAliasDomainAttribute($value);
+	public function setAliasDomainAttribute($value);
 
-    public function getConnectionAttribute();
+	public function getConnectionAttribute();
 
-    public function setConnectionAttribute($value);
+	public function setConnectionAttribute($value);
 
-    public function getMetaAttribute();
+	public function getMetaAttribute();
 
-    public function setMetaAttribute($value);
+	public function setMetaAttribute($value);
 }

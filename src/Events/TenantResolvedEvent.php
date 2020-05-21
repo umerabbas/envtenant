@@ -1,7 +1,6 @@
 <?php
-namespace ThinkSayDo\EnvTenant\Events;
+namespace UmerAbbas\EnvTenant\Events;
 
-class TenantResolvedEvent extends TenantEvent
-{
+class TenantResolvedEvent extends TenantEvent {
 
 }

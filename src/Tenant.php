@@ -1,8 +1,8 @@
 <?php
-namespace ThinkSayDo\EnvTenant;
+namespace UmerAbbas\EnvTenant;
 
 use Illuminate\Database\Eloquent\Model;
-use ThinkSayDo\EnvTenant\Contracts\TenantContract;
+use UmerAbbas\EnvTenant\Contracts\TenantContract;
 
 class Tenant extends Model implements TenantContract {
 	protected $table = 'tenants';
