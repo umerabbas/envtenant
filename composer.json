@@ -19,4 +19,11 @@
             "UmerAbbas\\EnvTenant\\": "src/"
         }
     },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "UmerAbbas\\EnvTenant\\TenantServiceProvider"
+            ]
+        }
+    }
 }
