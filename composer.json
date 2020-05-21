@@ -18,5 +18,12 @@
         "psr-4": {
             "UmerAbbas\\EnvTenant\\": "src"
         }
+    },
+    "extra": {
+    "laravel": {
+      "providers": [
+        "RandomPassword\\PasswordServiceProvider"
+      ]
     }
+  }
 }
