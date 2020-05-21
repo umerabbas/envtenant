@@ -1,6 +1,11 @@
-## Laravel EnvTenant 2.2.*
+## Laravel EnvTenant 3.*
 
-**WARNING: This project is now discontinued and will no longer be updated. If you want to use it, the code is fairly straightforward, so feel free to Fork and continue as you see fit.**
+Version 3.0 Changes:
+
+- Laravel 5.8 support.
+- Remove alias domian.
+- Add active domain flag.
+- Seprate folder for base migrations.
 
 Version 2.2.10 Changes:
 
