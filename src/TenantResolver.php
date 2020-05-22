@@ -128,7 +128,6 @@ class TenantResolver {
 			\Log::emergency(request()->fullUrl() . ' from ' . request()->ip());
 			throw new TenantNotResolvedException($domain);
 		}
-		config()->set('database.migrations', 'migrations\base');
 
 		return;
 	}
