@@ -14,15 +14,7 @@ interface TenantContract {
 
 	public function setSubdomainAttribute($value);
 
-	public function getAliasDomainAttribute($value);
-
-	public function setAliasDomainAttribute($value);
-
 	public function getConnectionAttribute();
 
 	public function setConnectionAttribute($value);
-
-	public function getMetaAttribute();
-
-	public function setMetaAttribute($value);
 }
